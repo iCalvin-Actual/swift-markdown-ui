@@ -30,7 +30,7 @@ public struct AssetImageProvider: ImageProvider {
 
   public func makeImage(url: URL?) -> some View {
     if let url = url, let image = self.image(url: url) {
-      ResizeToFit(idealSize: image.size) {
+      ResizeToFit(idealSize: image.size.applySizeCap()) {
         Image(platformImage: image)
           .resizable()
       }
@@ -73,4 +73,15 @@ extension Image {
       self.init(nsImage: platformImage)
     #endif
   }
+}
+
+extension CGSize {
+    func applySizeCap(maxHeight: CGFloat = 100) -> CGSize {
+        guard height > maxHeight else {
+            return self
+        }
+        let ratio = height / maxHeight
+        
+        return .init(width: width * ratio, height: maxHeight)
+    }
 }
