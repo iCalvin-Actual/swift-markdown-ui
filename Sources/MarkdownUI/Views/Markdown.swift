@@ -195,6 +195,7 @@ public struct Markdown: View {
   private let content: MarkdownContent
   private let baseURL: URL?
   private let imageBaseURL: URL?
+  private let hideImages: Bool
 
   /// Creates a Markdown view from a Markdown content value.
   /// - Parameters:
@@ -203,10 +204,12 @@ public struct Markdown: View {
   ///              URLs absolute. The default is `nil`.
   ///   - imageBaseURL: The base URL to use when resolving Markdown image URLs. If this value is `nil`, the initializer will
   ///                   determine image URLs using the `baseURL` parameter. The default is `nil`.
-  public init(_ content: MarkdownContent, baseURL: URL? = nil, imageBaseURL: URL? = nil) {
+  ///   - hideImages: Flag to prevent rendering image blocks
+  public init(_ content: MarkdownContent, baseURL: URL? = nil, imageBaseURL: URL? = nil, hideImages: Bool = false) {
     self.content = content
     self.baseURL = baseURL
     self.imageBaseURL = imageBaseURL ?? baseURL
+    self.hideImages = hideImages
   }
 
   public var body: some View {
@@ -222,7 +225,7 @@ public struct Markdown: View {
   }
 
   private var blocks: [BlockNode] {
-    self.content.blocks.filterImagesMatching(colorScheme: self.colorScheme)
+    self.content.blocks.filterImagesMatching(colorScheme: self.colorScheme, hideImages: hideImages)
   }
 }
 
@@ -234,8 +237,8 @@ extension Markdown {
   ///              URLs absolute. The default is `nil`.
   ///   - imageBaseURL: The base URL to use when resolving Markdown image URLs. If this value is `nil`, the initializer will
   ///                   determine image URLs using the `baseURL` parameter. The default is `nil`.
-  public init(_ markdown: String, baseURL: URL? = nil, imageBaseURL: URL? = nil) {
-    self.init(MarkdownContent(markdown), baseURL: baseURL, imageBaseURL: imageBaseURL)
+  public init(_ markdown: String, baseURL: URL? = nil, imageBaseURL: URL? = nil, hideImages: Bool = false) {
+    self.init(MarkdownContent(markdown), baseURL: baseURL, imageBaseURL: imageBaseURL, hideImages: hideImages)
   }
 
   /// Creates a Markdown view composed of any number of blocks.
