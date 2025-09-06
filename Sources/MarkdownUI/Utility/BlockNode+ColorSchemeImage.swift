@@ -1,12 +1,15 @@
 import SwiftUI
 
 extension Sequence where Element == BlockNode {
-  func filterImagesMatching(colorScheme: ColorScheme) -> [BlockNode] {
+  func filterImagesMatching(colorScheme: ColorScheme, hideImages: Bool = false) -> [BlockNode] {
     self.rewrite { inline in
       switch inline {
-      case .image(let source, _):
+      case .image(let source, let label):
         guard let url = URL(string: source), url.matchesColorScheme(colorScheme) else {
           return []
+        }
+        guard !hideImages else {
+          return [.link(destination: url.absoluteString, label)]
         }
         return [inline]
       default:
